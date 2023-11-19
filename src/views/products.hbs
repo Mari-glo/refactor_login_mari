@@ -1,0 +1,29 @@
+<h1>PRODUCTOS</h1>
+
+<div class="d-flex flex-row flex-wrap container">
+  {{#each products}}
+    <div class="border-1 border m-1 p-2 w-25">
+      <h4 class="">{{title}}</h4>
+      <img class="w-100" src={{img}} alt="">
+      <p>{{description}}</p>
+      <p>{{price}}</p>
+      <a href="/products/{{_id}}">
+      <button class="btn btn-dark">Detalles</button>
+      </a>
+    </div>
+  {{/each}}
+</div>
+<div class="container d-flex "> 
+ 
+  {{#if prevPage}}
+    <a href={{prevLink}}>
+      <button class="btn btn-dark" >Anterior</button>
+    </a>
+  {{/if}}
+  <p class="mx-2 ">Page {{this.page}}</p>
+  {{#if nextPage}}
+    <a href={{nextLink}}>
+      <button class="btn btn-dark" >Siguiente</button>
+    </a>
+  {{/if}}
+</div>
