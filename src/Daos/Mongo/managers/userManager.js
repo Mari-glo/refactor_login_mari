@@ -12,8 +12,8 @@ class UserManagerMongo{
             console.log(error)            
         }
     }
-    getUser = async (uid) => {
-        return await this.model.findOne({_id: uid})
+    getUser = async (filter) => {
+        return await this.model.findOne(filter)
     }
     async createUser(newUser){
         try {
@@ -22,8 +22,12 @@ class UserManagerMongo{
             console.log(error)             
         }
     }
-    async updateUser(){}
-    async deleteUser(){}
+    async updateUser({pid, userToUpdate}){
+        return this.model.findByIdAndUpdate({_id: pid}, userToUpdate)
+    }
+    async deleteUser(pid){
+        return this.model.findByIdAndDelete({_id: pid})
+    }
 
 }
 

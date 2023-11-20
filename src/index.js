@@ -42,7 +42,7 @@ app.use (session({
 
 initPassport()
 app.use(passport.initialize())
-app.use(passport.session())
+//app.use(passport.session())
 
 app.engine('hbs', handlebars.engine({
     extname:'.hbs'

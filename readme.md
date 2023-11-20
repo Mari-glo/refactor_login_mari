@@ -1,5 +1,5 @@
 - implementación login
-npm i bcrypt
+- npm i bcrypt
 
-https://www.passportjs.org/
-npm i passport pasport-local
+- https://www.passportjs.org/
+- npm i passport pasport-local
