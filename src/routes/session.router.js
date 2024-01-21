@@ -2,43 +2,74 @@ const { Router } = require ('express')
 const { userModel } = require('../Daos/Mongo/models/user.model.js')
 const { createHash, isValidPass } = require('../utils/hash.js')
 const passport = require('passport')
+const { generateToken } = require('../utils/jsonWebToken.js')
 
 
 const router = Router()
 
 
-router.post('/login', passport.authenticate('login', {failureRedirect: '/faillogin' }), async (req, res) => {
-    if(!req.user) return res.status(400).send({status:'error', error:'credenciales NO válidas' })
-      
-    req.session.user={
-        first_name: req.user.first_name,
-        last_name: req.user.last_name,
-        email: req.user.email,
-        role: 'admin'
-    }
-    res.send({status:'ok', payload: req.user})
-})
+router.post('/login', async (req,res) => {
+    const { email, password } = req.body
+   
+    // validar que venga email y password
 
+    // buscar el usuario 
+    const user = await userModel.findOne({email})
+    // console.log('user Login',user)
+    if (!user) return res.status(401).send({status: 'error', error: 'Usuario no existe'})
 
-router.post('/register', passport.authenticate('register', {
-    failureRedirect:'/failregister'
-}), async (req, res) => {
-    res.send({status:'ok', message:'registro exitoso'})
+    if (!isValidPass(password, user)) {
+        return res.status(401).send({status: 'error', error: 'Datos ingresados incorrectos'})
+    }   
+
+    const token = generateToken({
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        role: 'user'
+    })
+    
+    
+    // cookie 
+    res.cookie('cookieToken', token, {
+        maxAge: 60*60*10000,
+        httpOnly: true
+    }).status(200).send({
+        status: 'success',
+        // token: token,
+        message: 'logueado correctamente'
+    })
+
     
 })
-router.get('/failregister', async (req , res) => {
-    console.log('falló la estrategia')
-    res.send({status:error, error:'estrategia fallada'})
 
-})
-router.get('/faillogin', async (req , res) => {
-    console.log('falló el login')
-    res.send({status:error, error:'estrategia fallada'})
+// http://localhost:8080/api/sessions /register
+router.post('/register', async (req,res) => {
+    try {
+        const { first_name, last_name, email, password } = req.body
+        // validar campos
+        if (!first_name) {
+            return res.send({status: 'error', error: 'completar todos los campos'})
+        }
+        const exists = await userModel.findOne({email})
 
-})
+        if (exists) return res.status(401).send({status: 'error', error: 'El usuario con el mail ingresado ya existe'})
 
-router.post('/logout', (req, res) =>{
-    res.send('cerrada la sesión')
+        const newUser = {
+            first_name,
+            last_name,
+            email, 
+            password: createHash(password)
+        }
+
+        let result = await userModel.create(newUser)
+        // validar result
+
+        res.send({status: 'success', message: 'El ususario fue creado correctamente'})
+    } catch (error) {
+        console.log(error)
+    }
+    
 })
 
 //-----------------------github--------------------------

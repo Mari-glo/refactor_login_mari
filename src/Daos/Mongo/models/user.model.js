@@ -18,10 +18,12 @@ const userSchema = new Schema({
         unique: true
     },
     password: String,
-    gender: {
+    role: {
         type: String,
+        enum: ['user', 'user_premium', 'admin'],
+        default: 'user'
         
-    }
+    },
 })
 
 userSchema.plugin(mongoosePaginate)

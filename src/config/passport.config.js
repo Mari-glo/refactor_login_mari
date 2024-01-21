@@ -4,12 +4,37 @@ const local = require('passport-local')
 const { userModel } = require('../Daos/Mongo/models/user.model.js')
 const  {UserManagerMongo}  = require('../Daos/Mongo/managers/userManager.js')
 const { createHash , isValidPass } = require('../utils/hash.js')
-
+const jwt = require ('passport-jwt')
+const cookieParser = require('cookie-parser')
+const JWTStrategy = jwt.Strategy
+const ExtractJWT = jwt.ExtractJwt
 
 //const LocalStrategy = local.Strategy
 const userService= new UserManagerMongo()
 
 const initPassport =() => {
+
+    const cookieEstractor = req => {
+        let token = null
+        if (req && req.cookies) {
+            token = req.cookies['cookieToken']
+        }
+        return token
+    }
+
+    const objetStrategyJwt = {
+        jwtFromRequest: ExtractJWT.fromExtractors([cookieEstractor]),
+        secretOrKey: 'FirmaSecretaParaTokenMariD'
+    }
+
+    passport.use('jwt',  new JWTStrategy(objetStrategyJwt, async (jwt_payload, done) =>{
+        try {
+           return done (null, jwt_payload) 
+        } catch (error) {
+            return done (error)
+            
+        }
+    }))
 
     passport.use('github', new GithubStrategy({
         clientID: 'Iv1.4040ecaece694a96',

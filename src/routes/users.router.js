@@ -2,6 +2,7 @@ const { Router } = require ('express')
 const { UserManagerMongo } = require('../Daos/Mongo/managers/userManager.js')
 const { userModel } = require('../Daos/Mongo/models/user.model.js')
 const { auth } = require('../middleware/authentication.js')
+const { authToken } = require('../utils/jsonWebToken.js')
 
 const router = Router()
 let userService = new UserManagerMongo()

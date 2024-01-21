@@ -3,6 +3,17 @@ const { Router } = require ('express')
 
 const router = Router()
 
+
+router.get('/diccionary/:word([a-zA-Z]+)', async (req, res) =>{
+    const { word } = req.params
+    res.send({word})
+})
+
+router.get('*', async(req,res)=>{
+    res.status(404).send({status:'error', messagge: 'Ruta NO encontrada '})
+})
+
+
 router.get('/setcookies', async (req,res) => {
     res.cookie('mariCookie', 'info de la cookie', {maxAge: 500000}).send('cookie seteada')
 

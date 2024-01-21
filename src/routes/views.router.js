@@ -3,21 +3,32 @@ const { uploader } = require('../utils/multer')
 const { userModel } = require ('../Daos/Mongo/models/user.model')
 const { ProductManagerMongo } = require('../Daos/Mongo/managers/productManager.js')
 const { CartManagerMongo } = require('../Daos/Mongo/managers/cartManager.js')
+const { passportCall } = require('../middleware/passportCall.middlewars.js')
+const { authorization } = require('../middleware/authorization.middlewars.js')
+const passport = require('passport')
 
 
 const router = Router()
 let productService = new ProductManagerMongo()
 
 router.get('/login', (req, res)=>{
-  res.render('login')
+  res.render('login', {
+    showNav: true
+  })
 
 } )
 router.get('/register', (req, res)=>{
-  res.render('register')
+  res.render('register', {
+    showNav: true
+  })
 
 } )
 
-router.get('/users', async (req, res)=>{
+//jwt - passport
+
+//passport.authenticate('jwt', {session:false})
+
+router.get('/users', passportCall('jwt'),authorization('admin'), async (req, res)=>{
     try {
         const {numPage=1, limit=20, query=''} = req.query
 
